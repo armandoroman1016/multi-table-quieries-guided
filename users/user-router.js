@@ -34,7 +34,6 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   const userData = req.body;
-
   db('users').insert(userData)
   .then(ids => {
     res.status(201).json({ created: ids[0] });
@@ -76,5 +75,17 @@ router.delete('/:id', (req, res) => {
     res.status(500).json({ message: 'Failed to delete user' });
   });
 });
+
+router.get('/:id/posts', (req, res) =>{
+  const { id } = req.params
+
+  db('posts as p')
+  .join('users as u', 'u.id', '=', 'p.user_id')
+  .where('u.id', id)
+  .then(posts =>{
+    res.status(200).json(posts)
+  })
+  .catch( err => res.status(500).json(err))
+})
 
 module.exports = router;
